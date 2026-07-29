@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>陈嘉曦红人建联进度</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --pink: #FFB6C1;
+  --lavender: #E6E6FA;
+  --mint: #B5EAD7;
+  --sky: #B0E0E6;
+  --yellow: #FFF9C4;
+  --nude: #F5E6D3;
+  --pink-d: #FF69B4;
+  --lavender-d: #9B8EC4;
+  --mint-d: #66BB9A;
+  --sky-d: #5F9EA0;
+  --yellow-d: #FBC02D;
+  --bg: #FAFAFA;
+  --card-bg: #FFFFFF;
+  --text: #333333;
+  --text-sub: #666666;
+  --border: #E8E8E8;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0 0 60px 0;
+}
+.header {
+  background: linear-gradient(135deg, #FFB6C1 0%, #E6E6FA 50%, #B5EAD7 100%);
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+.header h1 { font-size: 26px; font-weight: 700; color: #444; margin-bottom: 6px; }
+.header p { font-size: 13px; color: #777; }
+.header .update-time { font-size: 12px; color: #999; margin-top: 8px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+
+/* KPI Cards */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: -20px 0 24px;
+}
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.kpi-card:hover { transform: translateY(-2px); }
+.kpi-card .icon { font-size: 22px; margin-bottom: 4px; }
+.kpi-card .value { font-size: 24px; font-weight: 700; line-height: 1.2; }
+.kpi-card .label { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+.kpi-card .sub { font-size: 11px; color: #999; margin-top: 2px; }
+.k-pink .value { color: #E91E63; }
+.k-lavender .value { color: #7C4DFF; }
+.k-mint .value { color: #00BFA5; }
+.k-sky .value { color: #0097A7; }
+.k-yellow .value { color: #F9A825; }
+.k-nude .value { color: #8D6E63; }
+
+/* Section */
+.section { margin-bottom: 28px; }
+.section-title {
+  font-size: 16px; font-weight: 600; margin-bottom: 12px;
+  padding-left: 10px; border-left: 4px solid var(--pink-d);
+}
+
+/* Charts row */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+.chart-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+.chart-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #555; }
+.chart-box { position: relative; height: 220px; }
+
+/* Filters */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.filter-bar input, .filter-bar select {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--pink-d); }
+.filter-bar input { min-width: 200px; }
+.filter-bar .btn-export {
+  margin-left: auto;
+  padding: 7px 16px;
+  background: var(--pink-d);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.filter-bar .btn-export:hover { background: #E91E63; }
+
+/* Table */
+.table-wrap {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead th {
+  background: #F8F5FA;
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+thead th:hover { background: #F0EBF5; }
+thead th .sort-arrow { font-size: 10px; opacity: 0.5; }
+tbody td {
+  padding: 8px 8px;
+  border-bottom: 1px solid #F0F0F0;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+tbody tr:hover { background: #FAF5FA; }
+tbody tr:nth-child(even) { background: #FCFCFD; }
+tbody tr:nth-child(even):hover { background: #FAF5FA; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green { background: #E8F5E9; color: #2E7D32; }
+.badge-gray { background: #F5F5F5; color: #999; }
+.badge-blue { background: #E3F2FD; color: #1565C0; }
+.badge-pink { background: #FCE4EC; color: #C2185B; }
+.badge-purple { background: #F3E5F5; color: #7B1FA2; }
+.badge-yellow { background: #FFF9C4; color: #F57F17; }
+.badge-red { background: #FFEBEE; color: #C62828; }
+
+.link-cell a {
+  color: var(--sky-d);
+  text-decoration: none;
+  font-size: 12px;
+}
+.link-cell a:hover { text-decoration: underline; }
+
+.stat-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+.stat-bar span { font-weight: 600; color: var(--text); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .charts-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>陈嘉曦红人建联进度</h1>
+  <p>LOVEVOOK KOC Outreach Dashboard · Color Your Life</p>
+  <div class="update-time" id="updateTime"></div>
+</div>
+<div class="container">
+  <!-- KPI Cards -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- Charts -->
+  <div class="section">
+    <div class="section-title">数据可视化</div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>建联回复分布</h3>
+        <div class="chart-box"><canvas id="chartReply"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>合作状态分布</h3>
+        <div class="chart-box"><canvas id="chartStatus"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Top 10 GMV贡献达人 ($)</h3>
+        <div class="chart-box"><canvas id="chartGMV"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="section">
+    <div class="section-title">达人建联明细</div>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="搜索达人名称/邮箱/画像...">
+      <select id="filterReply">
+        <option value="">全部回复状态</option>
+        <option value="☑">已回复</option>
+        <option value="☐">未回复</option>
+      </select>
+      <select id="filterBrief">
+        <option value="">全部Brief状态</option>
+        <option value="☑">已发Brief</option>
+        <option value="☐">未发Brief</option>
+      </select>
+      <select id="filterQuote">
+        <option value="">全部报价</option>
+        <option value="置换">置换</option>
+        <option value="谈价中">谈价中</option>
+      </select>
+      <select id="sortBy">
+        <option value="">默认排序</option>
+        <option value="粉丝量">按粉丝量</option>
+        <option value="已合作视频数">按合作视频数</option>
+        <option value="合作总播放量">按总播放量</option>
+        <option value="归因GMV($)">按GMV</option>
+      </select>
+      <button class="btn-export" onclick="exportCSV()">导出CSV</button>
+    </div>
+    <div class="stat-bar" id="statBar"></div>
+    <div class="table-wrap">
+      <table id="dataTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// === DATA ===
+const RAW_DATA = [{"达人名称": "melanieee.27", "邮箱": "Melmedellin27@gmail.com", "达人图片": "", "达人画像": "25左右，服饰美妆带货达人，购物场景多", "粉丝量": 7066, "主页链接": "https://www.tiktok.com/@melanieee.27", "案例视频": "https://www.tiktok.com/@melanieee.27/video/7477247807754210606", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 2, "合作总播放量": 28238, "平均播放/视频": 14119, "分享率%": 0.31, "分享数": 88, "完播率%": 10.5, "新增粉丝": 6, "互动率%(旧)": 2, "归因GMV($)": 2986.71}, {"达人名称": "yabishtiff1", "邮箱": "Yabishtiff1@gmail.com", "达人图片": "", "达人画像": "宝妈，日常探店shopping", "粉丝量": "9.7w", "主页链接": "https://www.tiktok.com/@yabishtiff1", "案例视频": "https://www.tiktok.com/@yabishtiff1/video/7656773117641051422", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 2, "合作总播放量": 7443, "平均播放/视频": 3722, "分享率%": 0.87, "分享数": 65, "完播率%": 13.9, "新增粉丝": 5, "互动率%(旧)": 4.57, "归因GMV($)": 87.92}, {"达人名称": "reallaurakay", "邮箱": "", "达人图片": "", "达人画像": "生活类带货博主", "粉丝量": "2.59w", "主页链接": "https://www.tiktok.com/@reallaurakay", "案例视频": "https://www.tiktok.com/@reallaurakay/video/7657203726372965663", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 13, "合作总播放量": 206422, "平均播放/视频": 15879, "分享率%": 0.1, "分享数": 197, "完播率%": 15.1, "新增粉丝": 30, "互动率%(旧)": 1.65, "归因GMV($)": 2599.13}, {"达人名称": "official.nilla", "邮箱": "nilla@otterinfluence.com", "达人图片": "", "达人画像": "美妆时尚，包包，带货类博主", "粉丝量": "2M", "主页链接": "https://www.tiktok.com/@official.nilla", "案例视频": "https://www.tiktok.com/@official.nilla/video/7661051604275039502", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 3, "合作总播放量": 37161, "平均播放/视频": 12387, "分享率%": 0.07, "分享数": 26, "完播率%": 10.3, "新增粉丝": 8, "互动率%(旧)": 3.54, "归因GMV($)": 208.27}, {"达人名称": "jennsclosetxo", "邮箱": "jennsclosetxoxo@gmail.com", "达人图片": "", "达人画像": "生活，宠物，美妆", "粉丝量": "1.57w", "主页链接": "https://www.tiktok.com/@jennsclosetxo", "案例视频": "https://www.tiktok.com/@jennsclosetxo/video/7527891928055106846", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": 72, "合作总播放量": 449088, "平均播放/视频": 6237, "分享率%": 0.09, "分享数": 409, "完播率%": 15.7, "新增粉丝": 38, "互动率%(旧)": 1.95, "归因GMV($)": 4366.48}, {"达人名称": "brunatravels", "邮箱": "brunacollab@gmail.com", "达人图片": "", "达人画像": "生活，家庭号，vlog", "粉丝量": 7111, "主页链接": "https://www.tiktok.com/@brunatravels", "案例视频": "https://www.tiktok.com/@brunatravels/video/7607469319068421406", "备注": "", "报价": 100, "第一封发布时间": 7.24, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": 82, "合作总播放量": 309529, "平均播放/视频": 3775, "分享率%": 0.02, "分享数": 68, "完播率%": 15.3, "新增粉丝": 28, "互动率%(旧)": 1.75, "归因GMV($)": 678.28}, {"达人名称": "anahimariche25", "邮箱": "Anahimariche@gmail.com", "达人图片": "", "达人画像": "旅行，生活，常去超市", "粉丝量": 8250, "主页链接": "https://www.tiktok.com/@anahimariche25", "案例视频": "https://www.tiktok.com/@anahimariche25/video/7662088528884452621", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 37, "合作总播放量": 78137, "平均播放/视频": 2112, "分享率%": 0.07, "分享数": 57, "完播率%": 11.5, "新增粉丝": 6, "互动率%(旧)": 1.3, "归因GMV($)": 1993.16}, {"达人名称": "xoxkathleenelizabeth", "邮箱": "", "达人图片": "", "达人画像": "生活用品带货", "粉丝量": "4.2w", "主页链接": "https://www.tiktok.com/@xoxkathleenelizabeth", "案例视频": "https://www.tiktok.com/@xoxkathleenelizabeth/video/7569441770031893790", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 302, "合作总播放量": 577957, "平均播放/视频": 1914, "分享率%": 0.06, "分享数": 371, "完播率%": 14.4, "新增粉丝": 60, "互动率%(旧)": 0.44, "归因GMV($)": 19917.86}, {"达人名称": "stay_at_homestead_mom", "邮箱": "", "达人图片": "", "达人画像": "生活类带货博主", "粉丝量": "1w", "主页链接": "https://www.tiktok.com/@stay_at_homestead_mom", "案例视频": "https://www.tiktok.com/@stay_at_homestead_mom/video/7661814196102794509", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 16, "合作总播放量": 20047, "平均播放/视频": 1253, "分享率%": 0.06, "分享数": 12, "完播率%": 21.4, "新增粉丝": 4, "互动率%(旧)": 0.87, "归因GMV($)": 1827.35}, {"达人名称": "beepbeepboopbeep", "邮箱": "", "达人图片": "", "达人画像": "律师，工作职场", "粉丝量": "14.7w", "主页链接": "https://www.tiktok.com/@beepbeepboopbeep", "案例视频": "https://www.tiktok.com/@beepbeepboopbeep/video/7660245600457215245", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 2, "合作总播放量": 2406, "平均播放/视频": 1203, "分享率%": 0, "分享数": 0, "完播率%": 15, "新增粉丝": 1, "互动率%(旧)": 4.07, "归因GMV($)": 48.44}, {"达人名称": "cassondra888", "邮箱": "Bella28.tiktokshop@gmail.com", "达人图片": "", "达人画像": "生活带货博主", "粉丝量": 6425, "主页链接": "https://www.tiktok.com/@cassondra888", "案例视频": "https://www.tiktok.com/@cassondra888/video/7586348011500899639", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 79, "合作总播放量": 89905, "平均播放/视频": 1138, "分享率%": 0.04, "分享数": 39, "完播率%": 24.2, "新增粉丝": 25, "互动率%(旧)": 0.43, "归因GMV($)": 2163.75}, {"达人名称": "brittanynh", "邮箱": "Brittany.tiktokcollab@gmail.com", "达人图片": "", "达人画像": "娃妈，生活类", "粉丝量": "4.26w", "主页链接": "https://www.tiktok.com/@brittanynh", "案例视频": "https://www.tiktok.com/@brittanynh/video/7264962675044535582", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 5, "合作总播放量": 5361, "平均播放/视频": 1072, "分享率%": 0.06, "分享数": 3, "完播率%": 52.4, "新增粉丝": 1, "互动率%(旧)": 0.9, "归因GMV($)": 256}, {"达人名称": "libbya797", "邮箱": "Libby.create8@gmail.com", "达人图片": "", "达人画像": "娃妈，家庭，生活", "粉丝量": 8471, "主页链接": "https://www.tiktok.com/@libbya797", "案例视频": "https://www.tiktok.com/@libbya797/video/7534437094203198734", "备注": "", "报价": "置换", "第一封发布时间": 7.24, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": 2, "合作总播放量": 2015, "平均播放/视频": 1008, "分享率%": 0.15, "分享数": 3, "完播率%": 41.6, "新增粉丝": 5, "互动率%(旧)": 3.08, "归因GMV($)": 0}, {"达人名称": "michellemennella", "邮箱": "insurance.mennella@yahoo.com", "达人图片": "", "达人画像": "美妆服饰带货", "粉丝量": 9195, "主页链接": "https://www.tiktok.com/@michellemennella\n", "案例视频": "https://www.tiktok.com/@michellemennella/video/7609347855978990878", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 7100, "平均播放/视频": 7100, "分享率%": "", "分享数": 20, "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "rickhutchugc", "邮箱": "Ricki@rickhutchugc.com", "达人图片": "", "达人画像": "生活，美妆", "粉丝量": "198.4k", "主页链接": "https://www.tiktok.com/@rickhutchugc", "案例视频": "7635840958453517599", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "stay_at_homestead_mom", "邮箱": "", "达人图片": "", "达人画像": "生活", "粉丝量": "10.1k", "主页链接": "https://www.tiktok.com/@stay_at_homestead_mom", "案例视频": "7564127747186969869", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 17992, "平均播放/视频": 17992, "分享率%": "", "分享数": 8, "完播率%": 0.0317, "新增粉丝": 3, "互动率%(旧)": "", "归因GMV($)": 1229.13}, {"达人名称": "theinspirednurse", "邮箱": "incrediblyinspiredllc@gmail.com", "达人图片": "", "达人画像": "护士，旅行，生活", "粉丝量": 7377, "主页链接": "https://www.tiktok.com/@theinspirednurse?lang=zh-Hans", "案例视频": "7533632798171614494", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 6100, "平均播放/视频": 6100, "分享率%": "", "分享数": 10, "完播率%": 0.018, "新增粉丝": 6, "互动率%(旧)": "", "归因GMV($)": 218.44}, {"达人名称": "therealcarterlyn", "邮箱": " carterlynent@gmail.com", "达人图片": "", "达人画像": "生活，穿搭", "粉丝量": "134k", "主页链接": "https://www.tiktok.com/@therealcarterlyn", "案例视频": "7609850264442506527", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 17913, "平均播放/视频": 17913, "分享率%": "", "分享数": 14, "完播率%": 0.0156, "新增粉丝": 2, "互动率%(旧)": "", "归因GMV($)": 596.63}, {"达人名称": "to0thlessqueen", "邮箱": "To0thlessQueen91@gmail.com", "达人图片": "", "达人画像": "美妆，带货", "粉丝量": "698.2k", "主页链接": "https://www.tiktok.com/@to0thlessqueen?lang=zh-Hans", "案例视频": "7606018253558697247", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 6427, "平均播放/视频": 6427, "分享率%": "", "分享数": 5, "完播率%": 0.0202, "新增粉丝": 2, "互动率%(旧)": "", "归因GMV($)": 293.28}, {"达人名称": "treatyoselftts", "邮箱": "", "达人图片": "", "达人画像": "包包测评", "粉丝量": 7426, "主页链接": "https://www.tiktok.com/@treatyoselftts", "案例视频": "7510273739297262879", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "twoboymom3", "邮箱": "", "达人图片": "", "达人画像": "穿搭，生活，带货", "粉丝量": "17.2k", "主页链接": "https://www.tiktok.com/@twoboymom3", "案例视频": "7646740527613857054", "备注": "", "报价": "", "第一封发布时间": "", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": 1, "合作总播放量": 12872, "平均播放/视频": 12872, "分享率%": "", "分享数": 17, "完播率%": 0.0043, "新增粉丝": 2, "互动率%(旧)": "", "归因GMV($)": 723.84}, {"达人名称": "whatlololikes", "邮箱": "Lauren@WhatLoLoLikes.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": "56.3k", "主页链接": "https://www.tiktok.com/@whatlololikes", "案例视频": "7604197161898708255", "备注": "", "报价": "", "第一封发布时间": 7.24, "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Sabrina Mooney\n", "邮箱": "sabrinamooney08@gmail.com", "达人图片": "", "达人画像": "穿搭生活", "粉丝量": "46.3k", "主页链接": "https://www.tiktok.com/@sabrinamooney", "案例视频": "https://www.tiktok.com/@sabrinamooney/video/7662946283736337677", "备注": "", "报价": "", "第一封发布时间": "达人主动建联7.27回复", "第一封是否回复": "☐", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "ambie_payne07", "邮箱": "amberleighmpayne@gmail.com", "达人图片": "", "达人画像": "生活，穿搭", "粉丝量": "22.7k", "主页链接": "https://www.tiktok.com/@ambie_payne07", "案例视频": "https://www.tiktok.com/@ambie_payne07/video/7520982890239298847?is_from_webapp=1&sender_device=pc", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "\nCiara", "邮箱": "ciarakgamble@gmail.com", "达人图片": "", "达人画像": "穿搭，工作，宠物", "粉丝量": "17k", "主页链接": "https://www.tiktok.com/@theciarak", "案例视频": "https://www.tiktok.com/@theciarak/video/7503607717190208799?is_from_webapp=1&sender_device=pc", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "GRACE LOREN ", "邮箱": "graceloren0905@gmail.com", "达人图片": "", "达人画像": "vlog，生活，穿搭", "粉丝量": 6047, "主页链接": "https://www.tiktok.com/@g.summ", "案例视频": "https://www.tiktok.com/@g.summ/video/7661386184915963149", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Kennedy", "邮箱": "kennedyculbertson3@gmail.com", "达人图片": "", "达人画像": "办公", "粉丝量": 6495, "主页链接": "https://www.tiktok.com/@grodddygirl", "案例视频": "https://www.tiktok.com/@grodddygirl/video/7636427075817262367", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Gabriela Sade Harris\n", "邮箱": "ContactGabrielaHarris@gersh.com", "达人图片": "", "达人画像": "穿搭，街拍", "粉丝量": "21.1k", "主页链接": "https://www.tiktok.com/@gabrielasadeee", "案例视频": "https://www.tiktok.com/@gabrielasadeee/video/7665844569174461710", "备注": "", "报价": "谈价中", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Jayla ", "邮箱": "jaylamccoy34@gmail.com", "达人图片": "", "达人画像": "工程师，穿搭", "粉丝量": "18k", "主页链接": "https://www.tiktok.com/@jems_r_cool", "案例视频": "https://www.tiktok.com/@jems_r_cool/video/7403474725361585454", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "alisha | htx", "邮箱": "thealishachronicles@gmail.com", "达人图片": "", "达人画像": "穿搭，美食", "粉丝量": "13.2k", "主页链接": "https://www.tiktok.com/@thealishachronicles", "案例视频": "https://www.tiktok.com/@thealishachronicles/video/7655777014099512590", "备注": "变装", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Asha", "邮箱": "asha.m.contact@gmail.com", "达人图片": "", "达人画像": "运动，vlog，生活", "粉丝量": 3049, "主页链接": "https://www.tiktok.com/@asha.maha", "案例视频": "https://www.tiktok.com/@asha.maha/video/7616087838685170974?is_from_webapp=1&sender_device=pc", "备注": "质量一般（思考pass）", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "kaelyn\n", "邮箱": " kaelynfranco17@gmail.com", "达人图片": "", "达人画像": "开箱，测评", "粉丝量": "16.9k", "主页链接": "https://www.tiktok.com/@kaelynofranco", "案例视频": "https://www.tiktok.com/@kaelynofranco/video/7653156159917952270", "备注": "备用，不太考虑", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Lyndsey", "邮箱": "Lyndseyduane@gmail.com", "达人图片": "", "达人画像": "通勤，办公", "粉丝量": "11.7k", "主页链接": "(6)Lyndsey (@lyndseyduane) | TikTok", "案例视频": "https://www.tiktok.com/@lyndseyduane/video/7659558826848341262", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Jordan", "邮箱": "teamjordan@itgirlagency.com", "达人图片": "", "达人画像": "工作妈妈", "粉丝量": "19.6k", "主页链接": "https://www.tiktok.com/@livingwiththehansens", "案例视频": "https://www.tiktok.com/@livingwiththehansens/video/7655497125429660941", "备注": "字幕太多了一般般", "报价": "谈价中", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Jaci", "邮箱": "jaci.thompson00@gmail.com", "达人图片": "", "达人画像": "美女，舞蹈", "粉丝量": "19k", "主页链接": "https://www.tiktok.com/@jacissecret", "案例视频": "https://www.tiktok.com/@jacissecret/video/7509281710983367978", "备注": "想要豹纹", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "brooke\n", "邮箱": " brookemt68@gmail.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": 3855, "主页链接": "https://www.tiktok.com/@user909428215", "案例视频": "https://www.tiktok.com/@user909428215/video/7663715908027747615", "备注": "备用，图文形式太多", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "adrienne\n", "邮箱": "w3luvad@gmail.com", "达人图片": "", "达人画像": "自拍，生活", "粉丝量": "50.8k", "主页链接": "adrienne (@w3luvad) | TikTok", "案例视频": "https://www.tiktok.com/@w3luvad/video/7663235546516344094", "备注": "备用，不太考虑", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "\nKendra Fuller\n", "邮箱": "kennypfulz@gmail.com", "达人图片": "", "达人画像": "穿搭，生活", "粉丝量": "53.8k", "主页链接": "https://www.tiktok.com/@kennypfulz", "案例视频": "https://www.tiktok.com/@kennypfulz/video/7653139643700890894", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "\nDom", "邮箱": "sarahbelax21@gmail.com", "达人图片": "", "达人画像": "办公室穿搭", "粉丝量": 3164, "主页链接": "https://www.tiktok.com/@ayeitsdomo", "案例视频": "https://www.tiktok.com/@ayeitsdomo/video/7538921001984331039", "备注": "办公室一周穿搭", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "jensojuicy\n", "邮箱": "jenbiz133@gmail.com", "达人图片": "", "达人画像": "ootd,穿搭，生活", "粉丝量": "20.5k", "主页链接": "https://www.tiktok.com/@jensojuicy", "案例视频": "https://www.tiktok.com/@jensojuicy/video/7635069542644927775", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "killerqueenn", "邮箱": "xkillerqueenn@gmail.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": "59.6k", "主页链接": "✮ ⋆ ˚｡𖦹 ⋆｡°✩ (@_killerqueenn) | TikTok", "案例视频": "https://www.tiktok.com/@_killerqueenn/video/7626864632807918879", "备注": "三个包！", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Anje | Careerish.edit\n", "邮箱": "hellocareerish.edit@gmail.com", "达人图片": "", "达人画像": "上班族", "粉丝量": 3494, "主页链接": "https://www.tiktok.com/@careerish.edit", "案例视频": "https://www.tiktok.com/@careerish.edit/video/7665045889681018126", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Fashion By Tay", "邮箱": "fashionbytay1@gmail.com", "达人图片": "", "达人画像": "鞋子展示，穿搭", "粉丝量": "18.1k", "主页链接": "https://www.tiktok.com/@mrs_perfect_toes", "案例视频": "", "备注": "不合适，后续发道歉信", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Sasha", "邮箱": "hi@forthemarketinggirls.com", "达人图片": "", "达人画像": "marketing上班族，vlog", "粉丝量": 1654, "主页链接": "https://www.tiktok.com/@misssalston", "案例视频": "https://www.tiktok.com/@misssalston/video/7657582528269798669", "备注": "超过50放弃", "报价": "谈价中", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "emersonpenney", "邮箱": "madison.rector@pauldesisto.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": "98.4k", "主页链接": "https://www.tiktok.com/@emersonpenney", "案例视频": "https://www.tiktok.com/@emersonpenney/video/7665485319705316639", "备注": "报价$3500，放弃", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "𝚁𝚎𝚋𝚎𝚌𝚊 𝙲𝚘𝚕𝚘𝚗 ", "邮箱": "rebecaa.colon@gmail.com", "达人图片": "", "达人画像": "上班族，生活", "粉丝量": "31.3K", "主页链接": "https://www.tiktok.com/@rebecacolon_", "案例视频": "https://www.tiktok.com/@rebecacolon_/video/7242821592042966315", "备注": "办公场景", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "KATLYN\n", "邮箱": "katlynxcalveiro@gmail.com", "达人图片": "", "达人画像": "旅行，生活，穿搭", "粉丝量": "43.4K", "主页链接": "https://www.tiktok.com/@katlynx", "案例视频": "https://www.tiktok.com/@katlynx/video/7663626165105577247", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "user9717928348524", "邮箱": " koyng808@gmail.com", "达人图片": "", "达人画像": "生活，自拍，穿搭", "粉丝量": "24.2k", "主页链接": "https://www.tiktok.com/@user9717928348524", "案例视频": "https://www.tiktok.com/@user9717928348524/video/7665210959736114463", "备注": "少萝，不太合适，备用", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "ally spellman\n", "邮箱": "alexa.hoover@grail-talent.com", "达人图片": "", "达人画像": "穿搭，带货，测评", "粉丝量": "37.5k", "主页链接": "https://www.tiktok.com/@allyspellman", "案例视频": "ally spellman (@allyspellman) | TikTok", "备注": "", "报价": "谈价中", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "nia gabrielle <3", "邮箱": "niaaa.gabrielle@gmail.com", "达人图片": "", "达人画像": "vlog，生活", "粉丝量": 3972, "主页链接": "https://www.tiktok.com/@niaaa.gabrielle", "案例视频": "https://www.tiktok.com/@niaaa.gabrielle/video/7624656488686046477", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Marie_Jane", "邮箱": "Mariejanebeautykits@gmail.com", "达人图片": "", "达人画像": "美食探店及生活方式内容创作者", "粉丝量": "47k", "主页链接": "https://www.tiktok.com/@mariejane0917", "案例视频": "", "备注": "不太匹配，不考虑，发道歉信", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "ambiyof", "邮箱": "https://www.tiktok.com/@ambiyof", "达人图片": "", "达人画像": "穿搭", "粉丝量": "56.8k", "主页链接": "https://www.tiktok.com/@ambiyof", "案例视频": "https://www.tiktok.com/@ambiyof/video/7667081666074021151", "备注": "问粉丝画像和预算中", "报价": "谈价中", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Isabela 🌷 | work vlogs\n", "邮箱": "contact.thedailydesk@gmail.com", "达人图片": "", "达人画像": "工作vlog", "粉丝量": 2010, "主页链接": "https://www.tiktok.com/@thedaily.desk", "案例视频": "https://www.tiktok.com/@thedaily.desk/video/7651979406113508622", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "maria", "邮箱": "smariaverdee@gmail.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": 4204, "主页链接": "https://www.tiktok.com/@smariaverde", "案例视频": "https://www.tiktok.com/@smariaverde/video/7666232276669304094", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Anna", "邮箱": "aglin319@gmail.com", "达人图片": "", "达人画像": "vlog", "粉丝量": 1415, "主页链接": "https://www.tiktok.com/@annalin319", "案例视频": "https://www.tiktok.com/@annalin319/video/7219854891978607915", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "dlynnburton", "邮箱": "dlynnburton41010@gmail.com", "达人图片": "", "达人画像": "带货，生活", "粉丝量": "21.2k", "主页链接": "https://www.tiktok.com/@dlynnburton", "案例视频": "https://www.tiktok.com/@dlynnburton/video/7653287345898179854", "备注": "比较一般，备用", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "lola", "邮箱": "olagrace87@icloud.com", "达人图片": "", "达人画像": "穿搭，生活", "粉丝量": "12.2k", "主页链接": "(6)lola🎀 (@lola.grace.87) | TikTok", "案例视频": "https://www.tiktok.com/@lola.grace.87/video/7665819806771236127", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Vicki c", "邮箱": "angeline@theviralistgroup.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": "66.8k", "主页链接": "https://www.tiktok.com/@justvickii.xi", "案例视频": "https://www.tiktok.com/@justvickii.xi/video/7662146879517510926", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "corporateclarity.career", "邮箱": "corporateclarity123@gmail.com", "达人图片": "", "达人画像": "职场分享", "粉丝量": "97.3k", "主页链接": "https://www.tiktok.com/@corporateclarity.career", "案例视频": "https://www.tiktok.com/@corporateclarity.career/video/7665137087343037709", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "msdnd", "邮箱": "duniadariosh216@icloud.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": 8296, "主页链接": "https://www.tiktok.com/@welcomfhi", "案例视频": "https://www.tiktok.com/@welcomfhi/video/7638456390033427743", "备注": "画像不确定，备用", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Mariamawit Mengesha\n", "邮箱": "mariamawit.mengeshay@gmail.com", "达人图片": "", "达人画像": "穿搭，测评", "粉丝量": "27.8k", "主页链接": "https://www.tiktok.com/@mariamawitmengesha", "案例视频": "https://www.tiktok.com/@mariamawitmengesha/video/7663926418178444545", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Grace Falcon", "邮箱": "grace.a.falcon@gmail.com", "达人图片": "", "达人画像": "穿搭，时尚", "粉丝量": "62.6k", "主页链接": "https://www.tiktok.com/@gracefalconn", "案例视频": "https://www.tiktok.com/@gracefalconn/video/7616173413752786189", "备注": "hobo", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "sadietoobaddie\n", "邮箱": "SaucyBoo21@outlook.com", "达人图片": "", "达人画像": "", "粉丝量": "19.2k", "主页链接": "https://www.tiktok.com/@sadietoobaddie", "案例视频": "", "备注": "不合适，后续发道歉信", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "mollywurldd", "邮箱": "oconnmol5@icloud.com", "达人图片": "", "达人画像": "穿搭", "粉丝量": 4458, "主页链接": "https://www.tiktok.com/@mollywurldd", "案例视频": "https://www.tiktok.com/@mollywurldd/video/7665724259095858445", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Beth Moore,RN", "邮箱": "bwsanford33@gmail.com", "达人图片": "", "达人画像": "护士，生活", "粉丝量": "33.5k", "主页链接": "https://www.tiktok.com/@bethwilkinsonmoore", "案例视频": "https://www.tiktok.com/@bethwilkinsonmoore/video/7649221408559566093", "备注": "", "报价": "置换", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☑", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}, {"达人名称": "Fab", "邮箱": "f4biiflo@gmail.com", "达人图片": "", "达人画像": "生活，vlog", "粉丝量": 2327, "主页链接": "https://www.tiktok.com/@fabi_f30", "案例视频": "", "备注": "", "报价": "", "第一封发布时间": 7.27, "第一封是否回复": "☑", "brief发送": "☐", "负责人": "陈嘉曦", "已合作视频数": "", "合作总播放量": "", "平均播放/视频": "", "分享率%": "", "分享数": "", "完播率%": "", "新增粉丝": "", "互动率%(旧)": "", "归因GMV($)": ""}];
+
+// === HELPERS ===
+function parseFollowers(v) {
+  if (v == null || v === '') return 0;
+  let s = String(v).trim().toLowerCase();
+  let num = parseFloat(s);
+  if (s.includes('m')) return num * 1000000;
+  if (s.includes('w')) return num * 10000;
+  if (s.includes('k')) return num * 1000;
+  return num || 0;
+}
+function fmtNum(v) {
+  if (v == null || v === '') return '-';
+  let n = Number(v);
+  if (isNaN(n)) return String(v);
+  if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if (n >= 10000) return (n/10000).toFixed(1)+'w';
+  return n.toLocaleString();
+}
+function fmtGMV(v) {
+  if (v == null || v === '') return '-';
+  let n = Number(v);
+  if (isNaN(n)) return '-';
+  return '$'+n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});
+}
+function cleanName(s) {
+  return String(s||'').replace(/\n/g,' ').trim();
+}
+function escapeHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// === COLUMNS ===
+const COLS = [
+  { key:'达人名称', label:'达人名称', type:'text' },
+  { key:'邮箱', label:'邮箱', type:'text' },
+  { key:'达人画像', label:'达人画像', type:'text' },
+  { key:'粉丝量', label:'粉丝量', type:'followers' },
+  { key:'主页链接', label:'主页', type:'link' },
+  { key:'案例视频', label:'案例视频', type:'link' },
+  { key:'备注', label:'备注', type:'text' },
+  { key:'报价', label:'报价', type:'badge' },
+  { key:'第一封发布时间', label:'首封时间', type:'text' },
+  { key:'第一封是否回复', label:'回复', type:'check' },
+  { key:'brief发送', label:'Brief', type:'check' },
+  { key:'负责人', label:'负责人', type:'text' },
+  { key:'已合作视频数', label:'视频数', type:'num' },
+  { key:'合作总播放量', label:'总播放', type:'num' },
+  { key:'平均播放/视频', label:'均播放', type:'num' },
+  { key:'分享率%', label:'分享率%', type:'percent' },
+  { key:'分享数', label:'分享数', type:'num' },
+  { key:'完播率%', label:'完播率%', type:'percent' },
+  { key:'新增粉丝', label:'新增粉丝', type:'num' },
+  { key:'互动率%(旧)', label:'互动率%', type:'percent' },
+  { key:'归因GMV($)', label:'GMV($)', type:'gmv' },
+];
+
+// === INIT ===
+const data = RAW_DATA.map((d,i) => ({...d, _idx:i, _name:cleanName(d['达人名称']), _followers:parseFollowers(d['粉丝量'])}));
+
+// Update time
+document.getElementById('updateTime').textContent = '数据更新时间: ' + new Date().toLocaleString('zh-CN');
+
+// === KPI ===
+function renderKPI() {
+  const total = data.length;
+  const replied = data.filter(d => d['第一封是否回复'] === '☑').length;
+  const notReplied = data.filter(d => d['第一封是否回复'] === '☐').length;
+  const briefSent = data.filter(d => d['brief发送'] === '☑').length;
+  const hasEmail = data.filter(d => d['邮箱'] && String(d['邮箱']).trim()).length;
+  const totalVideos = data.reduce((s,d) => s + (Number(d['已合作视频数'])||0), 0);
+  const totalViews = data.reduce((s,d) => s + (Number(d['合作总播放量'])||0), 0);
+  const totalGMV = data.reduce((s,d) => s + (Number(String(d['归因GMV($)']).replace(/,/g,''))||0), 0);
+  const replyRate = total > 0 ? ((replied/total)*100).toFixed(1) : 0;
+
+  const kpis = [
+    { cls:'k-pink', icon:'👥', value:total, label:'建联达人总数', sub:'含已发+待发' },
+    { cls:'k-mint', icon:'✉️', value:hasEmail, label:'已发邮件数', sub:'有邮箱的达人' },
+    { cls:'k-lavender', icon:'💬', value:replied, label:'已回复数', sub:`回复率 ${replyRate}%` },
+    { cls:'k-sky', icon:'📄', value:briefSent, label:'已发Brief', sub:'进入报价阶段' },
+    { cls:'k-yellow', icon:'🎬', value:totalVideos, label:'合作视频总数', sub:'累计' },
+    { cls:'k-nude', icon:'💰', value:'$'+totalGMV.toLocaleString(undefined,{maximumFractionDigits:0}), label:'归因GMV总额', sub:'累计' },
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(k =>
+    `<div class="kpi-card ${k.cls}"><div class="icon">${k.icon}</div><div class="value">${k.value}</div><div class="label">${k.label}</div><div class="sub">${k.sub}</div></div>`
+  ).join('');
+}
+
+// === CHARTS ===
+function renderCharts() {
+  const replied = data.filter(d => d['第一封是否回复'] === '☑').length;
+  const notReplied = data.filter(d => d['第一封是否回复'] === '☐').length;
+
+  // Reply pie
+  new Chart(document.getElementById('chartReply'), {
+    type: 'doughnut',
+    data: {
+      labels: ['已回复', '未回复'],
+      datasets: [{ data: [replied, notReplied], backgroundColor: ['#66BB9A','#E0E0E0'], borderWidth: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{font:{size:12}} } } }
+  });
+
+  // Status distribution
+  const quoteMap = {};
+  data.forEach(d => {
+    let q = d['报价'] || '未报价';
+    if (q === '') q = '未报价';
+    quoteMap[q] = (quoteMap[q]||0) + 1;
+  });
+  const statusLabels = Object.keys(quoteMap);
+  const statusData = statusLabels.map(k => quoteMap[k]);
+  const statusColors = ['#FFB6C1','#E6E6FA','#B5EAD7','#B0E0E6','#FFF9C4','#F5E6D3','#FFD54F'];
+  new Chart(document.getElementById('chartStatus'), {
+    type: 'doughnut',
+    data: {
+      labels: statusLabels,
+      datasets: [{ data: statusData, backgroundColor: statusColors.slice(0, statusLabels.length), borderWidth: 0 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{font:{size:11}} } } }
+  });
+
+  // GMV top 10
+  const gmvData = data
+    .map(d => ({ name: d._name, gmv: Number(String(d['归因GMV($)']).replace(/,/g,''))||0 }))
+    .filter(d => d.gmv > 0)
+    .sort((a,b) => b.gmv - a.gmv)
+    .slice(0, 10);
+  new Chart(document.getElementById('chartGMV'), {
+    type: 'bar',
+    data: {
+      labels: gmvData.map(d => d.name.length > 12 ? d.name.slice(0,10)+'..' : d.name),
+      datasets: [{ label: 'GMV ($)', data: gmvData.map(d => d.gmv), backgroundColor: '#FFB6C1', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } }
+    }
+  });
+}
+
+// === TABLE ===
+let sortKey = '', sortDir = 1;
+
+function renderTable() {
+  // Head
+  const head = document.getElementById('tableHead');
+  head.innerHTML = '<tr>' + COLS.map(c =>
+    `<th onclick="toggleSort('${c.key}')" title="点击排序">${c.label}${sortKey===c.key?(sortDir>0?' ▲':' ▼'):'<span class="sort-arrow">⇅</span>'}</th>`
+  ).join('') + '</tr>';
+
+  // Filter
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const fReply = document.getElementById('filterReply').value;
+  const fBrief = document.getElementById('filterBrief').value;
+  const fQuote = document.getElementById('filterQuote').value;
+  const sortByVal = document.getElementById('sortBy').value;
+
+  let filtered = data.filter(d => {
+    if (search) {
+      const hay = (d._name + ' ' + (d['邮箱']||'') + ' ' + (d['达人画像']||'')).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    if (fReply && d['第一封是否回复'] !== fReply) return false;
+    if (fBrief && d['brief发送'] !== fBrief) return false;
+    if (fQuote && d['报价'] !== fQuote) return false;
+    return true;
+  });
+
+  // Sort
+  if (sortByVal) {
+    sortKey = sortByVal;
+  }
+  if (sortKey) {
+    const col = COLS.find(c => c.key === sortKey);
+    filtered.sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (col && col.type === 'followers') {
+        va = a._followers; vb = b._followers;
+      } else if (col && (col.type === 'num' || col.type === 'gmv' || col.type === 'percent')) {
+        va = Number(String(va).replace(/,/g,''))||0;
+        vb = Number(String(vb).replace(/,/g,''))||0;
+      } else {
+        va = String(va||''); vb = String(vb||'');
+      }
+      if (va < vb) return -sortDir;
+      if (va > vb) return sortDir;
+      return 0;
+    });
+  }
+
+  // Body
+  const body = document.getElementById('tableBody');
+  body.innerHTML = filtered.map(d => {
+    return '<tr>' + COLS.map(c => {
+      const v = d[c.key];
+      if (v == null || v === '') return '<td style="color:#ccc">-</td>';
+      switch(c.type) {
+        case 'check':
+          return `<td style="text-align:center;font-size:16px">${v === '☑' ? '<span style="color:#2E7D32">✓</span>' : '<span style="color:#ccc">○</span>'}</td>`;
+        case 'badge': {
+          let cls = 'badge-gray';
+          if (v === '置换') cls = 'badge-green';
+          else if (v === '谈价中') cls = 'badge-yellow';
+          return `<td><span class="badge ${cls}">${escapeHtml(v)}</span></td>`;
+        }
+        case 'followers':
+          return `<td>${fmtNum(parseFollowers(v))}</td>`;
+        case 'num':
+          return `<td>${fmtNum(v)}</td>`;
+        case 'percent':
+          return `<td>${v}%</td>`;
+        case 'gmv':
+          return `<td style="font-weight:600;color:#E91E63">${fmtGMV(v)}</td>`;
+        case 'link': {
+          let url = String(v).trim();
+          if (!url.startsWith('http')) return `<td style="color:#ccc;font-size:11px">${escapeHtml(url.slice(0,15))}</td>`;
+          return `<td class="link-cell"><a href="${escapeHtml(url)}" target="_blank">链接</a></td>`;
+        }
+        default:
+          return `<td title="${escapeHtml(v)}">${escapeHtml(cleanName(v).slice(0,30))}</td>`;
+      }
+    }).join('') + '</tr>';
+  }).join('');
+
+  // Stats
+  document.getElementById('statBar').innerHTML =
+    `显示 <span>${filtered.length}</span> / ${data.length} 条 · ` +
+    `已回复 <span style="color:#2E7D32">${filtered.filter(d=>d['第一封是否回复']==='☑').length}</span> · ` +
+    `未回复 <span style="color:#999">${filtered.filter(d=>d['第一封是否回复']==='☐').length}</span>`;
+}
+
+function toggleSort(key) {
+  if (sortKey === key) { sortDir = -sortDir; }
+  else { sortKey = key; sortDir = 1; }
+  document.getElementById('sortBy').value = '';
+  renderTable();
+}
+
+function exportCSV() {
+  const headers = COLS.map(c => c.label);
+  const rows = data.map(d => COLS.map(c => {
+    let v = d[c.key];
+    if (v == null) v = '';
+    return '"' + String(v).replace(/"/g,'""') + '"';
+  }));
+  const csv = '\uFEFF' + [headers.map(h=>'"'+h+'"').join(',')].concat(rows.map(r=>r.join(','))).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '陈嘉曦红人建联进度.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('filterReply').addEventListener('change', renderTable);
+document.getElementById('filterBrief').addEventListener('change', renderTable);
+document.getElementById('filterQuote').addEventListener('change', renderTable);
+document.getElementById('sortBy').addEventListener('change', renderTable);
+
+// Init
+renderKPI();
+renderCharts();
+renderTable();
+</script>
+</body>
+</html>
