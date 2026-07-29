@@ -541,8 +541,7 @@ function fmtNum(v) {
   return n.toLocaleString();
 }
 function cleanName(s) {
-  return String(s||'').replace(/
-/g,' ').trim();
+  return String(s||'').replace(/\n/g,' ').trim();
 }
 function escapeHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -845,8 +844,7 @@ function exportCSV() {
     if (v == null) v = '';
     return '"' + String(v).replace(/"/g,'""') + '"';
   }));
-  const csv = '﻿' + [headers.map(h=>'"'+h+'"').join(',')].concat(rows.map(r=>r.join(','))).join('
-');
+  const csv = '﻿' + [headers.map(h=>'"'+h+'"').join(',')].concat(rows.map(r=>r.join(','))).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -950,8 +948,7 @@ function exportPoolCSV() {
     if (v == null) v = '';
     return '"' + String(v).replace(/"/g,'""') + '"';
   }));
-  const csv = '﻿' + [headers.map(h=>'"'+h+'"').join(',')].concat(rows.map(r=>r.join(','))).join('
-');
+  const csv = '﻿' + [headers.map(h=>'"'+h+'"').join(',')].concat(rows.map(r=>r.join(','))).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
